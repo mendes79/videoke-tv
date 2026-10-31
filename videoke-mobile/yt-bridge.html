@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Videoke TV Player Bridge</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background: #000;
+    }
+    #yt-frame {
+      width: 100vw;
+      height: 100vh;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="yt-frame"></div>
+
+  <script>
+    (function(window) {
+      "use strict";
+
+      var player = null;
+      var pendingVideoId = null;
+
+      function sendToParent(type, data) {
+        try {
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({
+              source: "videoke-yt-bridge",
+              type: type,
+              data: data || {}
+            }, "*");
+          }
+        } catch (e) {}
+      }
+
+      window.onYouTubeIframeAPIReady = function() {
+        player = new window.YT.Player("yt-frame", {
+          width: "100%",
+          height: "100%",
+          playerVars: {
+            autoplay: 1,
+            controls: 0,
+            enablejsapi: 1,
+            rel: 0,
+            modestbranding: 1,
+            fs: 0,
+            iv_load_policy: 3,
+            playsinline: 1,
+            origin: window.location.origin
+          },
+          events: {
+            onReady: function() {
+              sendToParent("ready", {});
+              if (pendingVideoId) {
+                player.loadVideoById({ videoId: pendingVideoId, startSeconds: 0 });
+                pendingVideoId = null;
+              }
+            },
+            onStateChange: function(ev) {
+              sendToParent("stateChange", { state: ev.data });
+              if (ev.data === window.YT.PlayerState.ENDED) {
+                sendToParent("ended", {});
+              }
+            },
+            onError: function(ev) {
+              sendToParent("error", { code: ev.data });
+            }
+          }
+        });
+      };
+
+      window.addEventListener("message", function(ev) {
+        var msg = ev.data;
+        if (!msg || msg.target !== "videoke-yt-bridge") return;
+
+        var cmd = msg.command;
+        if (cmd === "loadVideo") {
+          var vid = msg.videoId;
+          if (!vid) return;
+          if (player && player.loadVideoById) {
+            player.loadVideoById({ videoId: vid, startSeconds: 0 });
+          } else {
+            pendingVideoId = vid;
+          }
+        } else if (cmd === "play") {
+          if (player && player.playVideo) player.playVideo();
+        } else if (cmd === "pause") {
+          if (player && player.pauseVideo) player.pauseVideo();
+        } else if (cmd === "stop") {
+          if (player && player.stopVideo) player.stopVideo();
+        }
+      });
+
+      var tag = document.createElement("script");
+      tag.src = "https://www.youtube.com/iframe_api";
+      document.body.appendChild(tag);
+    })(window);
+  </script>
+</body>
+</html>
+

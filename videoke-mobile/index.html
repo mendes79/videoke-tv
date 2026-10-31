@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0b0d14">
+  <title>Videoke Mobile - Controle de Fila</title>
+  <link rel="stylesheet" href="css/mobile.css">
+</head>
+
+<body>
+
+  <!-- Cabecalho com status da sala e cota do usuario -->
+  <header class="top-bar">
+    <div class="brand-row">
+      <div class="brand-title">
+        <span class="mic-icon">&#127908;</span>
+        <div>
+          <h1>Videokê <span>TV</span></h1>
+          <p id="room-badge" class="room-badge">Sala: conectando...</p>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button id="btn-open-queue" class="queue-nav-btn" type="button">
+          &#9776; Fila <span id="queue-badge-count" class="queue-badge-count">0</span>
+        </button>
+        <button id="btn-settings" class="icon-btn" type="button" title="Configurações da API"
+          aria-label="Configurações">
+          &#9881;
+        </button>
+      </div>
+    </div>
+
+    <!-- Barra de cota: limite de 2 musicas por participante -->
+    <div id="quota-card" class="quota-card">
+      <div class="quota-info">
+        <span class="quota-label">Suas músicas:</span>
+        <strong id="quota-count" class="quota-count">0 de 2 ativas</strong>
+      </div>
+      <div class="quota-dots">
+        <span id="quota-dot-1" class="dot"></span>
+        <span id="quota-dot-2" class="dot"></span>
+      </div>
+    </div>
+    <div id="quota-warning" class="quota-warning hidden">
+      Limite atingido (2/2 na fila). Aguarde uma tocar ou exclua uma pendente para pedir outra!
+    </div>
+  </header>
+
+  <!-- TELA 1: Tela Principal de Selecao e Busca -->
+  <main id="main-view" class="container">
+    <!-- Identificacao do Cantor (limite de 25 caracteres) -->
+    <section class="card singer-section">
+      <div class="label-row">
+        <label for="singer-name" class="field-label">Seu nome (Cantor)</label>
+        <span id="char-counter" class="char-counter">0/25</span>
+      </div>
+      <input type="text" id="singer-name" class="text-input" placeholder="Digite seu nome..." maxlength="25"
+        autocomplete="name">
+    </section>
+
+    <!-- Busca por Texto ou Comando de Voz -->
+    <section class="card search-section">
+      <label for="search-input" class="field-label">Buscar música (Karaokê)</label>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <input type="search" id="search-input" class="text-input search-input" placeholder="Música ou cantor..."
+            autocomplete="off">
+          <button id="btn-voice" class="voice-btn" type="button" title="Buscar por voz" aria-label="Buscar por voz">
+            &#127897;
+          </button>
+        </div>
+        <button id="btn-search" class="primary-btn search-btn" type="button">
+          Buscar
+        </button>
+      </div>
+      <div id="speech-status" class="speech-status hidden">
+        Ouvindo... fale o nome da música agora!
+      </div>
+    </section>
+
+    <!-- Musica tocando agora / Suas musicas na fila -->
+    <section id="live-queue-section" class="card queue-preview-section">
+      <div class="section-header">
+        <div class="section-title-group">
+          <h2>Status na TV</h2>
+          <span id="conn-dot" class="conn-dot online" title="Conectado ao Firebase"></span>
+        </div>
+        <button id="btn-open-queue-inline" class="link-btn" type="button">
+          Ver fila &rsaquo;
+        </button>
+      </div>
+      <div id="now-playing-box" class="now-playing-box">
+        Aguardando músicas na fila...
+      </div>
+      <div id="my-songs-list" class="my-songs-list"></div>
+    </section>
+
+    <!-- Lista de Resultados da Busca (Oculta ate o usuario pesquisar) -->
+    <section id="results-section" class="results-section hidden">
+      <div class="section-header">
+        <h2 id="results-title">Resultados da Busca</h2>
+        <span id="results-meta" class="results-meta"></span>
+      </div>
+      <div id="results-list" class="results-list"></div>
+    </section>
+  </main>
+
+  <!-- TELA 2: Visualizacao Completa da Fila na TV -->
+  <main id="queue-view" class="container hidden">
+    <section class="card queue-full-card">
+      <div class="queue-view-header">
+        <button id="btn-close-queue" class="back-btn" type="button">
+          &larr; Voltar
+        </button>
+        <div class="queue-view-titles">
+          <h2>Fila de Músicas</h2>
+          <span id="queue-view-subtitle" class="queue-view-subtitle">Atualizado em tempo real</span>
+        </div>
+      </div>
+
+      <!-- Musica no Palco Agora -->
+      <div class="stage-section">
+        <div class="field-label">No Palco Agora</div>
+        <div id="queue-view-playing" class="now-playing-box">
+          Nenhuma música no palco no momento.
+        </div>
+      </div>
+
+      <!-- Lista Numerada das Proximas Musicas -->
+      <div class="upcoming-section">
+        <div class="field-label">Próximas na Sequência</div>
+        <div id="queue-view-list" class="queue-view-list"></div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal de Configuracao de API Key do YouTube / Firebase -->
+  <div id="settings-modal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3>Configurações da Sala</h3>
+      <p class="modal-desc">
+        Para pesquisar todo o catálogo do YouTube ao vivo, informe sua chave da <b>YouTube Data API v3</b>.
+      </p>
+      <label for="cfg-yt-key" class="field-label">YouTube API Key (v3)</label>
+      <input type="text" id="cfg-yt-key" class="text-input" placeholder="AIzaSy...">
+
+      <label for="cfg-db-url" class="field-label">Firebase Realtime DB URL</label>
+      <input type="text" id="cfg-db-url" class="text-input"
+        placeholder="https://videoke-tv-default-rtdb.firebaseio.com">
+
+      <div class="modal-actions">
+        <button id="btn-close-settings" class="secondary-btn" type="button">Cancelar</button>
+        <button id="btn-save-settings" class="primary-btn" type="button">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast de Feedback -->
+  <div id="toast" class="toast"></div>
+
+  <!-- Scripts -->
+  <script src="js/speech.js"></script>
+  <script src="js/youtube.js"></script>
+  <script src="js/app.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,23 @@
+# Artefatos de build do Tizen Studio
+**/.buildResult/
+*.wgt
+build/
+
+# Logs e diagnosticos locais
+diagnostico/
+*.log
+
+# Cache do Firebase CLI
+.firebase/
+
+# Certificados e chaves (nunca versionar)
+Certificado/
+*.p12
+*.pwd
+*.pem
+*.key
+
+# Arquivos de sistema
+Thumbs.db
+.DS_Store
+

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Videoke</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- 1. Player do YouTube em Tela Cheia -->
+  <div id="player-container">
+    <div id="yt-player"></div>
+  </div>
+
+  <!-- 2. Tela de Espera (Fila Vazia) com QR Code -->
+  <div id="idle-screen">
+    <div class="idle-content">
+      <div class="brand-badge">Videoke Inteligente</div>
+      <h1 class="app-title">Estacao de <span>Karaoke</span></h1>
+      <p class="app-subtitle">Cante seus classicos favoritos direto do YouTube na TV</p>
+
+      <div class="qr-card">
+        <div class="qr-box" id="qr-box"></div>
+        <div class="qr-instructions">
+          <h3>Peca sua musica pelo celular</h3>
+          <ol>
+            <li>Aponte a <b>camera do seu celular</b> para o QR Code ao lado.</li>
+            <li>Abra o link no navegador (<b>sem instalar nada</b>).</li>
+            <li>Fale ou digite a musica e clique em <b>Enviar</b>!</li>
+          </ol>
+          <div class="room-tag" id="room-tag">SALA: tv_sala_mendes</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Tela de Transicao com Contagem Regressiva de 15s (Dividida em 2 Colunas) -->
+  <div id="countdown-screen">
+    <div class="countdown-layout">
+      <!-- Coluna Esquerda: Cantor Atual e Contador de 15s -->
+      <div class="countdown-left">
+        <div class="countdown-label">Agora no Palco</div>
+        <div class="next-singer" id="next-singer">Carlos</div>
+        <div class="next-song" id="next-song-title">Evidencias - Chitaozinho e Xororo (Videoke)</div>
+
+        <div class="timer-circle" id="timer-display">15</div>
+
+        <div class="countdown-hint">
+          Prepare o microfone! Pressione <b>OK (Play)</b> para iniciar agora.
+        </div>
+      </div>
+
+      <!-- Coluna Direita: Proximas Musicas Agendadas na Fila -->
+      <div class="countdown-right">
+        <div class="queue-panel-header">
+          <div class="queue-panel-title">Próximas na Fila</div>
+          <div class="queue-panel-badge" id="countdown-queue-count">0 na espera</div>
+        </div>
+
+        <div class="queue-table-head">
+          <span class="col-idx">#</span>
+          <span class="col-singer">Cantor</span>
+          <span class="col-song">Música</span>
+        </div>
+
+        <div class="countdown-queue-list" id="countdown-queue-list"></div>
+        <div class="countdown-queue-more hidden" id="countdown-queue-more"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Mini QR Code Flutuante (Canto Inferior Esquerdo durante reproducao do video) -->
+  <div id="mini-qr-overlay" class="mini-qr-overlay hidden">
+    <div class="mini-qr-box" id="mini-qr-box"></div>
+    <div class="mini-qr-label">Peça sua música</div>
+  </div>
+
+  <!-- 5. Aviso de Contagem Regressiva dos Ultimos 10s de Pausa -->
+  <div id="pause-timeout-banner" class="pause-timeout-banner hidden">
+    Vídeo em pausa — Próxima música em <span id="pause-timeout-sec">10</span>s...
+  </div>
+
+  <!-- 6. Barra de Menu no Rodape (Footer Menu Bar) -->
+  <div id="footer-bar" class="visible">
+    <div class="footer-info">
+      <div class="now-title" id="now-playing-title">Videoke Pronto (Fila Vazia)</div>
+      <div class="up-next-title" id="up-next-title">A seguir: Fim da fila (Aponte o celular e peca)</div>
+    </div>
+
+    <div class="footer-controls">
+      <button class="btn-ctrl" id="btn-play-pause" tabindex="0">
+        <span>&#9658;</span> Play
+      </button>
+      <button class="btn-ctrl" id="btn-stop" tabindex="0">
+        <span>&#9632;</span> Parar
+      </button>
+      <button class="btn-ctrl" id="btn-prev" tabindex="0">
+        <span>&#9664;&#9664;</span> Anterior
+      </button>
+      <button class="btn-ctrl" id="btn-next" tabindex="0">
+        <span>&#9654;&#9654;</span> Proxima
+      </button>
+      <button class="btn-ctrl btn-reset" id="btn-reset" tabindex="0">
+        <span>&#8635;</span> Reset Fila
+      </button>
+      <button class="btn-ctrl" id="btn-exit" tabindex="0">
+        <span>&#10006;</span> Sair
+      </button>
+    </div>
+  </div>
+
+  <!-- 7. Notificacao Flutuante Superior -->
+  <div id="notification-banner"></div>
+
+  <!-- Scripts -->
+  <script src="js/config.js"></script>
+  <script src="js/qrcode.min.js"></script>
+  <script src="js/firebase-sync.js"></script>
+  <script src="js/yt-player.js"></script>
+  <script src="js/remote.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
