@@ -86,3 +86,11 @@ Este aplicativo faz parte do ecossistema do [**lilauncher**](https://github.com/
 
 MIT. Veja o arquivo [LICENSE](LICENSE).
 
+
+
+## Projetos relacionados
+
+Apps do mesmo ecossistema para Smart TV Samsung Tizen:
+
+- **[lilauncher](https://github.com/mendes79/lilauncher)** — launcher minimalista (tela inicial) da TV, onde o Videokê aparece na fileira principal. Site: https://mendes79.github.io/lilauncher/
+- **[SNES Tizen Emulator](https://github.com/mendes79/SNES-Tizen-Emulator)** — emulador de Super Nintendo que roda direto na TV via WebAssembly, lançado a partir do lilauncher.
